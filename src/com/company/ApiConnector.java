@@ -24,7 +24,8 @@ public class ApiConnector {
     public String getForecastForToday(String city) throws IOException {
         URL address = null;
         try {
-            String endpointWithParams = String.format("/data/2.5/weather?q=%s&appid=%s&units=%s", city, APP_ID, "metric");
+            String endpointWithParams =
+            String.format("/data/2.5/weather?q=%s&appid=%s&units=%s", city, APP_ID, "metric");
             address = new URL("http", "api.openweathermap.org", endpointWithParams);
         } catch (MalformedURLException e) {
             System.err.println(e.toString());
@@ -33,6 +34,7 @@ public class ApiConnector {
 
         URLConnection connection = address.openConnection();
         StringBuilder result = new StringBuilder();
+        // try-with-resources
         try (InputStream is = connection.getInputStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 

@@ -3,18 +3,14 @@ package com.company;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Application {
+public class Application implements GuiCallback {
 
     private static Application app;
-    private Scanner input;
+    private Gui gui;
     private ApiConnector connector;
 
     public static void main(String[] args) {
         getInstance().init();
-    }
-
-    public Application() {
-
     }
 
     public static Application getInstance() {
@@ -23,14 +19,27 @@ public class Application {
     }
 
     public void init() {
-        input = new Scanner(System.in);
+        gui = new ConsoleGui(System.in, System.out, this);
         connector = new ApiConnector();
-        printGreeting();
-        printMenu();
+        gui.init();
+        gui.print("test");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        gui.reset();
     }
 
-    public void printGreeting() {
-        System.out.println("Hello from the OpenWeatherMap API sample app!");
+    public synchronized Gui getGui() {
+
+        return this.gui;
+    }
+
+    @Override
+    public void handleAction(String action) {
+        printForecast(action);
+        getGui().init();
     }
 
     public void printMenu() {
@@ -39,11 +48,10 @@ public class Application {
         switch (option) {
             case 1 : printForecast(ForecastMode.TODAY, new GuiCallback() {
                 @Override
-                public void reset() {
-                    printMenu();
+                public void handleAction(String action) {
+                    printForecast();
                 }
             });
-                break;
         }
     }
 
